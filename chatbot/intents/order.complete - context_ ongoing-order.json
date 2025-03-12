@@ -1,0 +1,46 @@
+{
+  "id": "5b8cc450-b0a0-4f4a-add0-158e1b2873fc",
+  "name": "order.complete - context: ongoing-order",
+  "auto": true,
+  "contexts": [
+    "ongoing-order"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [
+        {
+          "name": "ongoing-order",
+          "lifespan": 5
+        }
+      ],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Thanks for your order! We\u0027re preparing it with care.\nYour order id is #",
+            "Thanks for ordering.\nYour order id is #",
+            "Got it! Your order has been placed successfully.\nYour order id is #",
+            "Your delicious meal is on its way!\nYour order id is #",
+            "Hang tight! Your order is being prepared fresh.\nYour order id is #"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

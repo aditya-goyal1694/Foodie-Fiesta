@@ -1,0 +1,132 @@
+[
+  {
+    "id": "3d7f8bba-93fd-403d-a0f2-8efc9af84c15",
+    "data": [
+      {
+        "text": "take my order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "c44a4b0a-0a00-4757-a19d-7c4ed1043677",
+    "data": [
+      {
+        "text": "place an order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "3ccc482b-f7cd-4afb-bd4e-4e342396169e",
+    "data": [
+      {
+        "text": "place a new order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "42af1910-0ae4-447b-b237-530dc18688c1",
+    "data": [
+      {
+        "text": "start a new order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "017e448e-f2c8-4a27-83de-206c212d3461",
+    "data": [
+      {
+        "text": "umm... i want to order something",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ab41fd84-5401-4062-bdde-98944b392ef6",
+    "data": [
+      {
+        "text": "i\u0027d like to order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a591df14-b82c-47b3-81f8-ced80041ad35",
+    "data": [
+      {
+        "text": "initiate a new order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ce91aff7-66dc-4df1-93a3-3c5a27466752",
+    "data": [
+      {
+        "text": "new order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a39e062f-e125-4a00-a9f1-0cf0ddaff187",
+    "data": [
+      {
+        "text": "fresh order",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "4653771b-5b1e-457f-9afb-776eb87b2322",
+    "data": [
+      {
+        "text": "how about I order something",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "en",
+    "updated": 0
+  }
+]
