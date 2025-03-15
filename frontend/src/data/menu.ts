@@ -262,13 +262,5 @@ export const menuItems = [
     description: "Crispy hollow puris filled with spicy and tangy water",
     image: "https://glenindia.com/a/blog/media/glen-india.myshopify.com/Post/featured_img/pani_puri.jpg",
     category: "Street Bites"
-  },
-  {
-    id: 34,
-    name: "Peri Peri Fries",
-    price: 79,
-    description: "Crispy French fries tossed in spicy and tangy peri peri seasoning",
-    image: "https://vanlavino.com/wp-content/uploads/2024/07/67268.jpg",
-    category: "Street Bites"
   }
 ];

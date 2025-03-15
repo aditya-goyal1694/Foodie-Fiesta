@@ -10,7 +10,6 @@ export default function ChatBot() {
   };
 
   useEffect(() => {
-    // Ensure iframe loads properly
     if (iframeRef.current) {
       iframeRef.current.onload = () => {
         console.log('Dialogflow iframe loaded successfully');
@@ -22,10 +21,10 @@ export default function ChatBot() {
     <div className="fixed bottom-4 right-4 w-[350px] flex flex-col">
       <button
         onClick={toggleChat}
-        className="bg-orange-600 text-white p-4 rounded-t-lg flex items-center self-end cursor-pointer hover:bg-orange-700 transition-colors"
+        className="bg-gradient-to-r from-orange-600 to-orange-500 text-white p-4 rounded-t-lg flex items-center self-end cursor-pointer hover:from-orange-700 hover:to-orange-600 transition-all shadow-lg"
       >
         <Bot className="w-6 h-6 mr-2" />
-        <span className="font-semibold">Chat-à-la-Carte Assistant</span>
+        <span className="font-semibold">Chat-à-la-Carte</span>
       </button>
       
       {isOpen && (
