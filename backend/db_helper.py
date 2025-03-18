@@ -1,13 +1,18 @@
 import mysql.connector
+from dotenv import load_dotenv
+import os
 global cnx
 
+load_dotenv()
+
 cnx = mysql.connector.connect(
-    host="containers-us-west-25.railway.app",
-    user="root",
-    password="admin123",
-    database="foodiefiesta",
-    port = 8000
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT"))
 )
+
 
 # Function to call the MySQL stored procedure and insert an order item
 def insert_order_item(food_item, quantity, order_id):
