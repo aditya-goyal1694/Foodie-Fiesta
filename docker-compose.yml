@@ -4,13 +4,21 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-  
+    depends_on:
+      - mysql
+    networks:
+      - foodienet
+    env_file:
+      - ./backend/.env
+
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    networks:
+      - foodienet
 
   mysql:
     image: mysql:8
@@ -22,3 +30,8 @@ services:
       MYSQL_PASSWORD: admin123
     ports:
       - "3306:3306"
+    networks:
+      - foodienet
+
+networks:
+  foodienet:
