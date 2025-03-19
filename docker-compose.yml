@@ -32,3 +32,6 @@ services:
     - "3306:3306"
   networks:
     - foodienet
+
+networks:
+  foodienet:
