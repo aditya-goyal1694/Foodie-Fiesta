@@ -1,36 +1,16 @@
-CREATE DATABASE IF NOT EXISTS `railway`;
-USE `railway`;
+CREATE DATABASE  IF NOT EXISTS `foodieFiesta`;
+USE `foodieFiesta`;
 
-DROP TABLE IF EXISTS `order_tracking`;
-DROP TABLE IF EXISTS `orders`;
 DROP TABLE IF EXISTS `food_items`;
 
 CREATE TABLE `food_items` (
-  `item_id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) UNIQUE NOT NULL,
-  `price` DECIMAL(10,2) NOT NULL,
+  `item_id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `orders` (
-  `order_id` INT NOT NULL,
-  `item_id` INT NOT NULL,
-  `quantity` INT NOT NULL CHECK (`quantity` > 0),
-  `total_price` DECIMAL(10,2) GENERATED ALWAYS AS (quantity * (SELECT price FROM food_items WHERE food_items.item_id = orders.item_id)) VIRTUAL,
-  PRIMARY KEY (`order_id`,`item_id`),
-  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `food_items` (`item_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `order_tracking` (
-  `order_id` INT NOT NULL,
-  `status` ENUM('pending', 'in transit', 'delivered') NOT NULL,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`order_id`),
-  CONSTRAINT `order_tracking_fk` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
--- Populate food_items
 INSERT INTO food_items (item_id, name, price) VALUES
 (1, 'Margherita Pizza', 299.00),
 (2, 'Farmhouse Pizza', 349.00),
@@ -68,64 +48,105 @@ INSERT INTO food_items (item_id, name, price) VALUES
 (34, 'Peri Peri Fries', 79.00);
 
 
--- Populate orders
-INSERT INTO `orders` (`order_id`, `item_id`, `quantity`) VALUES
-(40, 1, 2),
-(40, 3, 1),
-(41, 4, 3),
-(41, 6, 2),
-(41, 9, 4);
+DROP TABLE IF EXISTS `order_tracking`;
 
--- Populate order_tracking
+CREATE TABLE `order_tracking` (
+  `order_id` int NOT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
 INSERT INTO `order_tracking` VALUES (40,'delivered'),(41,'in transit');
 
--- Function to get price of an item
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+
+CREATE TABLE `orders` (
+  `order_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  `quantity` int DEFAULT NULL,
+  `total_price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`order_id`,`item_id`),
+  KEY `orders_ibfk_1` (`item_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `food_items` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` VALUES (40,1,2,598.00),(40,3,1,249.00),(41,4,3,807.00),(41,6,2,258.00),(41,9,4,316.00);
+
+
 DELIMITER ;;
-CREATE FUNCTION `get_price_for_item`(p_item_name VARCHAR(255)) RETURNS DECIMAL(10,2)
-DETERMINISTIC
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_price_for_item`(p_item_name VARCHAR(255)) RETURNS decimal(10,2)
+    DETERMINISTIC
 BEGIN
-    DECLARE v_price DECIMAL(10,2);
-    SELECT COALESCE(price, -1) INTO v_price FROM food_items WHERE name = p_item_name LIMIT 1;
-    RETURN v_price;
-END;;
+    DECLARE v_price DECIMAL(10, 2);
+    
+    -- Check if the item_name exists in the food_items table
+    IF (SELECT COUNT(*) FROM food_items WHERE name = p_item_name) > 0 THEN
+        -- Retrieve the price for the item
+        SELECT price INTO v_price
+        FROM food_items
+        WHERE name = p_item_name;
+        
+        RETURN v_price;
+    ELSE
+        -- Invalid item_name, return -1
+        RETURN -1;
+    END IF;
+END ;;
 DELIMITER ;
 
--- Function to get total price of an order
 DELIMITER ;;
-CREATE FUNCTION `get_total_order_price`(p_order_id INT) RETURNS DECIMAL(10,2)
-DETERMINISTIC
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_total_order_price`(p_order_id INT) RETURNS decimal(10,2)
+    DETERMINISTIC
 BEGIN
-    DECLARE v_total_price DECIMAL(10,2);
-    SELECT COALESCE(SUM(total_price), -1) INTO v_total_price FROM orders WHERE order_id = p_order_id;
-    RETURN v_total_price;
-END;;
+    DECLARE v_total_price DECIMAL(10, 2);
+    
+    -- Check if the order_id exists in the orders table
+    IF (SELECT COUNT(*) FROM orders WHERE order_id = p_order_id) > 0 THEN
+        -- Calculate the total price
+        SELECT SUM(total_price) INTO v_total_price
+        FROM orders
+        WHERE order_id = p_order_id;
+        
+        RETURN v_total_price;
+    ELSE
+        -- Invalid order_id, return -1
+        RETURN -1;
+    END IF;
+END ;;
 DELIMITER ;
 
--- Procedure to insert an order item
+
 DELIMITER ;;
-CREATE PROCEDURE `insert_order_item`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_order_item`(
   IN p_food_item VARCHAR(255),
   IN p_quantity INT,
   IN p_order_id INT
 )
 BEGIN
     DECLARE v_item_id INT;
-    DECLARE v_price DECIMAL(10,2);
+    DECLARE v_price DECIMAL(10, 2);
+    DECLARE v_total_price DECIMAL(10, 2);
 
-    -- Validate input
-    IF p_quantity <= 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Quantity must be greater than zero';
-    END IF;
+    -- Get the item_id and price for the food item
+    SET v_item_id = (SELECT item_id FROM food_items WHERE name = p_food_item);
+    SET v_price = (SELECT get_price_for_item(p_food_item));
 
-    -- Get item_id and price
-    SELECT item_id, price INTO v_item_id, v_price FROM food_items WHERE name = p_food_item LIMIT 1;
+    -- Calculate the total price for the order item
+    SET v_total_price = v_price * p_quantity;
 
-    -- Validate food item
-    IF v_item_id IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid food item';
-    END IF;
-
-    -- Insert order item
-    INSERT INTO orders (order_id, item_id, quantity) VALUES (p_order_id, v_item_id, p_quantity);
-END;;
+    -- Insert the order item into the orders table
+    INSERT INTO orders (order_id, item_id, quantity, total_price)
+    VALUES (p_order_id, v_item_id, p_quantity, v_total_price);
+END ;;
 DELIMITER ;
