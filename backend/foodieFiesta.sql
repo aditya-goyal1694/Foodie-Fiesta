@@ -1,5 +1,5 @@
-CREATE DATABASE  IF NOT EXISTS `foodieFiesta`;
-USE `foodieFiesta`;
+CREATE DATABASE  IF NOT EXISTS `railway`;
+USE `railway`;
 
 DROP TABLE IF EXISTS `food_items`;
 
