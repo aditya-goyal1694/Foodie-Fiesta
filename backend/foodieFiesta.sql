@@ -1,18 +1,34 @@
-CREATE DATABASE IF NOT EXISTS `FOODIEFIESTA`;
-USE `FOODIEFIESTA`;
+CREATE DATABASE IF NOT EXISTS `railway`;
+USE `railway`;
 
--- Drop tables in correct order
 DROP TABLE IF EXISTS `order_tracking`;
 DROP TABLE IF EXISTS `orders`;
 DROP TABLE IF EXISTS `food_items`;
 
--- Creating food_items first because orders references it
 CREATE TABLE `food_items` (
-  `item_id` int NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
+  `item_id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) UNIQUE NOT NULL,
+  `price` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `orders` (
+  `order_id` INT NOT NULL,
+  `item_id` INT NOT NULL,
+  `quantity` INT NOT NULL CHECK (`quantity` > 0),
+  `total_price` DECIMAL(10,2) GENERATED ALWAYS AS (quantity * (SELECT price FROM food_items WHERE food_items.item_id = orders.item_id)) VIRTUAL,
+  PRIMARY KEY (`order_id`,`item_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `food_items` (`item_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `order_tracking` (
+  `order_id` INT NOT NULL,
+  `status` ENUM('pending', 'in transit', 'delivered') NOT NULL,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`order_id`),
+  CONSTRAINT `order_tracking_fk` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- Populate food_items
 INSERT INTO food_items (item_id, name, price) VALUES
@@ -51,15 +67,6 @@ INSERT INTO food_items (item_id, name, price) VALUES
 (33, 'Pani Puri', 59.00),
 (34, 'Peri Peri Fries', 79.00);
 
--- Creating orders table before order_tracking
-CREATE TABLE `orders` (
-  `order_id` int NOT NULL,
-  `item_id` int NOT NULL,
-  `quantity` int DEFAULT NULL,
-  `total_price` decimal(10,2) GENERATED ALWAYS AS (quantity * (SELECT price FROM food_items WHERE food_items.item_id = orders.item_id)) STORED,
-  PRIMARY KEY (`order_id`, `item_id`),
-  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `food_items` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Populate orders
 INSERT INTO `orders` (`order_id`, `item_id`, `quantity`) VALUES
@@ -68,15 +75,6 @@ INSERT INTO `orders` (`order_id`, `item_id`, `quantity`) VALUES
 (41, 4, 3),
 (41, 6, 2),
 (41, 9, 4);
-
--- Now creating order_tracking since orders exists
-CREATE TABLE `order_tracking` (
-  `order_id` INT NOT NULL,
-  `status` VARCHAR(255) NOT NULL CHECK (`status` IN ('pending', 'in transit', 'delivered')),
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`order_id`),
-  CONSTRAINT `order_tracking_fk` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Populate order_tracking
 INSERT INTO `order_tracking` VALUES (40,'delivered'),(41,'in transit');
