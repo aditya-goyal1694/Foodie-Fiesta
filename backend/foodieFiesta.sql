@@ -1,9 +1,12 @@
-CREATE DATABASE  IF NOT EXISTS `FOODIEFIESTA`
+CREATE DATABASE IF NOT EXISTS `FOODIEFIESTA`;
 USE `FOODIEFIESTA`;
 
-
+-- Drop tables in correct order
+DROP TABLE IF EXISTS `order_tracking`;
+DROP TABLE IF EXISTS `orders`;
 DROP TABLE IF EXISTS `food_items`;
 
+-- Creating food_items first because orders references it
 CREATE TABLE `food_items` (
   `item_id` int NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -11,7 +14,7 @@ CREATE TABLE `food_items` (
   PRIMARY KEY (`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Populate food_items
 INSERT INTO food_items (item_id, name, price) VALUES
 (1, 'Margherita Pizza', 299.00),
 (2, 'Farmhouse Pizza', 349.00),
@@ -48,11 +51,25 @@ INSERT INTO food_items (item_id, name, price) VALUES
 (33, 'Pani Puri', 59.00),
 (34, 'Peri Peri Fries', 79.00);
 
+-- Creating orders table before order_tracking
+CREATE TABLE `orders` (
+  `order_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  `quantity` int DEFAULT NULL,
+  `total_price` decimal(10,2) GENERATED ALWAYS AS (quantity * (SELECT price FROM food_items WHERE food_items.item_id = orders.item_id)) STORED,
+  PRIMARY KEY (`order_id`, `item_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `food_items` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Populate orders
+INSERT INTO `orders` (`order_id`, `item_id`, `quantity`) VALUES
+(40, 1, 2),
+(40, 3, 1),
+(41, 4, 3),
+(41, 6, 2),
+(41, 9, 4);
 
-DROP TABLE IF EXISTS `order_tracking`;
-
-
+-- Now creating order_tracking since orders exists
 CREATE TABLE `order_tracking` (
   `order_id` INT NOT NULL,
   `status` VARCHAR(255) NOT NULL CHECK (`status` IN ('pending', 'in transit', 'delivered')),
@@ -61,32 +78,8 @@ CREATE TABLE `order_tracking` (
   CONSTRAINT `order_tracking_fk` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+-- Populate order_tracking
 INSERT INTO `order_tracking` VALUES (40,'delivered'),(41,'in transit');
-
-
-
-DROP TABLE IF EXISTS `orders`;
-
-
-CREATE TABLE `orders` (
-  `order_id` int NOT NULL,
-  `item_id` int NOT NULL,
-  `quantity` int DEFAULT NULL,
-  `total_price` decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (`order_id`,`item_id`),
-  KEY `orders_ibfk_1` (`item_id`),
-  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `food_items` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
-INSERT INTO `orders` (`order_id`, `item_id`, `quantity`) VALUES
-(40, 1, 2),
-(40, 3, 1),
-(41, 4, 3),
-(41, 6, 2),
-(41, 9, 4);
-
 
 -- Function to get price of an item
 DELIMITER ;;
@@ -99,7 +92,6 @@ BEGIN
 END;;
 DELIMITER ;
 
-
 -- Function to get total price of an order
 DELIMITER ;;
 CREATE FUNCTION `get_total_order_price`(p_order_id INT) RETURNS DECIMAL(10,2)
@@ -110,7 +102,6 @@ BEGIN
     RETURN v_total_price;
 END;;
 DELIMITER ;
-
 
 -- Procedure to insert an order item
 DELIMITER ;;
