@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - foodienet
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - foodienet
+
+  mysql:
+    image: mysql:8
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    networks:
+      - foodienet
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/foodiefiesta.sql:/docker-entrypoint-initdb.d/foodiefiesta.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+networks:
+  foodienet:
+
+volumes:
+  mysql_data:

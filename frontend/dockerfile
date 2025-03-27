@@ -1,0 +1,23 @@
+# Use Node.js base image
+FROM node:18
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json first to optimize caching
+COPY package.json package-lock.json ./
+
+# Install dependencies (include dev dependencies for development)
+RUN npm ci
+
+# Copy frontend code
+COPY . .
+
+# Ensure native modules are correctly built
+RUN npm rebuild
+
+# Expose the frontend port
+EXPOSE 3000
+
+# Start the React app in development mode
+CMD ["npm", "run", "dev"]

@@ -1,0 +1,43 @@
+{
+  "id": "2da998e7-fe3b-41f9-bd2a-862fcfcfda55",
+  "name": "Default Welcome Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.welcome",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "🍽️ Welcome to Chat-à-la-Carte! 🍽️\nHello! How can I assist you today? You can say \u0027New Order\u0027 to start a fresh order or \u0027Track Order\u0027 to check your order status. Let’s get started!",
+            "Welcome to Chat-à-la-Carte! 🍕🍔\nHey there! Ready to order some delicious food? Say \u0027New Order\u0027 to place an order or \u0027Track Order\u0027 to check your order status. Let’s dig in!",
+            "Hello, foodie! 🍽️\nWelcome to Chat-à-la-Carte! How can I serve you today? Say \u0027New Order\u0027 to start ordering or \u0027Track Order\u0027 to check on your meal!",
+            "Hey there! Hungry? 😋\nYou’re at the right place! Say \u0027New Order\u0027 to browse our menu or \u0027Track Order\u0027 to check your order status. Let\u0027s satisfy those cravings!",
+            "Bon Appétit with Chat-à-la-Carte! 🍜\nHi there! I\u0027m here to help with your food cravings. Say \u0027New Order\u0027 to place an order or \u0027Track Order\u0027 to get an update on your meal!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "WELCOME"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

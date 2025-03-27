@@ -1,0 +1,11 @@
+To run the application locally:
+
+1. Start container
+docker-compose up
+
+2. Map http to https using ngrok'
+ngrok http 8000
+
+3. Update fulfilment credentials on dialogflow
+visit https://dialogflow.cloud.google.com/#/agent/j-a-r-v-i-s-ef9d/fulfillment
+update url and click save
